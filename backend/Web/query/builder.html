@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SQL Query Builder</title>
+        <link rel="stylesheet" href="builder.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+    <body>
+        <h1>Query Builder</h1>
+
+        <form id="query-builder-form">
+            <!-- Dropdown for Table selection -->
+            <label for="table">Table:</label>
+            <input id="table" readonly>
+
+            <!-- Dropdown for Column selection -->
+            <label for="column_selector">Select Column:</label>
+            <select id="column_selector"></select>
+
+            <label for="column_condition">Select Column For Condition(Optional):</label>
+            <select id="column_condition"></select>
+
+            <label for="condition">Condition (Optional):</label>
+            <input type="text" id="condition" placeholder="e.g., = 5">
+            <div class="button-container">
+                <button type="button" onclick="generateQuery()" class="generate-btn">Generate Query</button>
+                <button type="button" id="copyQuery" class="copy-btn">
+                    <i class="fa fa-copy"></i>
+                </button>
+            </div>
+
+        </form>
+
+        <h2>Generated Query:</h2>
+        <p id="generated-sql"></p>
+        <script src="builder.js"></script>
+    </body>
+</html>

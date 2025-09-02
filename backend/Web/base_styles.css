@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #00bcd4;
+}
+
+.form {
+    background-color: #1f1f1f;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 600px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 1rem;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+    font-size: 1rem;
+}
+
+input[type="text"], select {
+    background-color: #222;
+}
+
+input:focus, select:focus, button:focus {
+    outline: none;
+    border-color: #00bcd4;
+}
+
+button {
+    background-color: #00bcd4;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0097a7;
+}
+
+.hidden {
+    display: none;
+}
+
+#performButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#performButton:hover {
+    background-color: #45a049;  /* Darker green */
+}
+
+#operationContainer, #checkDuplicateContainer, #columnContainer, #targetFileUploadContainer, #performButton{
+    margin-top: 20px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+}
+
+label {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+#connectionForm {
+    width: 100%;
+    max-width: 500px;
+}
+
+#connectionForm h2 {
+    text-align: center;
+    color: #00bcd4;
+    margin-bottom: 20px;
+}
+
+select, input {
+    background-color: #222;
+    border-color: #444;
+}
+
+input:focus, select:focus {
+    border-color: #00bcd4;
+    background-color: #333;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    .form-group {
+        max-width: 100%;
+        }
+}
+
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    color: #333;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+#resetDiv {
+    display: flex; /* Use flex to align items */
+    width: 100%;
+    height: 40px; /* Adjust height as needed */
+}
+
+.resetDivChild{
+    width: 20%; /* 1/5 of the parent div */
+    height: 100%; /* Full height of parent */
+    margin: 5px;
+}
+
+#resetButton, #sourceModal, #targetModal {
+    background-color: gray; /* Default gray color */
+    transition: background-color 0.3s ease; /* Smooth color transition */
+    width: 33.33%; /* 1/5 of the parent div */
+    height: 100%; /* Full height of parent */
+    margin: 5px; /* Optional, just to give spacing */
+}
+
+#resetButton:hover{
+    background-color: #FF0000;
+}
+
+#sourceModal:hover,#targetModal:hover{
+    background-color: #ffa500;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #1f1f1f;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    width: 80%;
+    max-width: 800px; /* Optional max-width */
+    color: #fff; /* White text color to contrast with the dark background */
+}
+
+.close {
+    color: #aaa;
+     float: right;
+     font-size: 28px;
+     font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.queryInput{
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.input-group div {
+    width: 48%;
+}
+
+.input-group input {
+    width: 100%;
+}

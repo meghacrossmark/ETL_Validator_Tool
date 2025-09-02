@@ -1,0 +1,126 @@
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #00bcd4;
+}
+
+form {
+    width: 300px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 1rem;
+}
+
+select, input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+    font-size: 1rem;
+}
+
+input:focus, select:focus, button:focus {
+     outline: none;
+     border-color: #00bcd4;
+}
+
+
+button {
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#generated-sql {
+    font-family: "Courier New", Courier, monospace;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    color: #333;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    max-height: 300px;
+    width: 100%;
+    max-width: 500px;
+}
+
+select, input {
+    background-color: #222;
+    border-color: #444;
+}
+
+input:focus, select:focus {
+    border-color: #00bcd4;
+    background-color: #333;
+}
+
+.button-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px; /* Adds space between the buttons */
+}
+
+.generate-btn {
+    flex: 9;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.copy-btn {
+    flex: 1;
+    padding: 10px 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-btn i {
+    margin-right: 8px;
+}
+
+.button-container button {
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.generate-btn:hover,
+.copy-btn:hover {
+    background-color: #45a049;
+}
