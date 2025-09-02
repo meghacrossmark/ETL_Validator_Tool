@@ -1,0 +1,37 @@
+@import 'colors';
+@import 'fonts';
+
+.custom-btn {
+    font-weight: map-get($weights, 'regular');
+    font-size: map-get($sizes, 'medium');
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+  
+    &-primary {
+      background-color: $cyb-blue;
+      color: white;
+      border-radius: 6px;
+      border: none;
+      padding: 0.5rem 1rem;
+  
+      &:hover {
+        background-color: darken($cyb-blue, 5%);
+        border-color: darken($cyb-blue, 5%);
+        transform: scale(1.05);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        
+      }
+    }
+  
+    &-danger {
+      background-color: $cyb-error;
+      color: map-get($colors, 'primary');
+  
+      &:hover {
+        background-color: darken($cyb-error, 10%);
+        border-color: darken($cyb-error, 12%);
+      }
+    }
+  }
+//use it as : my-button my-button--primary  

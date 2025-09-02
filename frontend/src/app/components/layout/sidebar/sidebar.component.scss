@@ -1,0 +1,59 @@
+@import 'styles.scss';
+.sidebar-container {
+  width: 200px;
+  background-color:$cyb-navy; // Example dark sidebar background
+  height: 100vh;
+  overflow-y: auto;
+  padding-top: 20px;
+
+  .logo {
+    text-align: center;
+    margin-bottom: 30px;
+    img.srcimg {
+      width: 100%;
+      max-width: 180px;
+      height: auto;
+    }
+  }
+
+  nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 10px;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 20px;
+        color: $cyb-background-white;
+        text-decoration: none;
+        border-radius: 0;
+        transition: background-color 0.3s;
+
+        i {
+          font-size: 1rem;
+        }
+
+        span.links {
+          @extend .font-medium-large-white;
+        }
+
+        &:hover {
+          background-color: darken($cyb-navy, 10%);
+        }
+      }
+
+      a.active {
+        background-color: $cyb-background-white;
+        color: $cyb-navy;
+        i, span.links {
+          @extend .font-semibold-large-primary;
+        }
+      }
+    }
+  }
+}

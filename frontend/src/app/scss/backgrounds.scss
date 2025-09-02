@@ -1,0 +1,24 @@
+@import 'colors';
+
+$cyb-colors: (
+  'cyb-navy': $cyb-navy,
+  'cyb-blue': $cyb-blue,
+  'cyb-secondary-green':$cyb-secondary-green,
+  'cyb-secondary-blue': $cyb-secondary-blue,
+  'cyb-secondary-purple': $cyb-secondary-purple,
+  'cyb-info':$cyb-info,
+  'cyb-success': $cyb-success,
+  'cyb-error': $cyb-error,
+  'cyb-warning':$cyb-warning,
+  'cyb-background-gray': $cyb-background-gray,
+  'cyb-background-light': $cyb-background-light,
+  'cyb-background-white':$cyb-background-white,
+);
+
+
+@each $name, $value in $cyb-colors {
+    .bg-#{$name} {
+      background-color: #{$value} !important;
+      color: if(lightness($value) < 60%, #fff, #000);
+    }
+  }

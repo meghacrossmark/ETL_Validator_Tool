@@ -1,0 +1,49 @@
+@import 'app/scss/fonts.scss';
+@import 'app/scss/colors.scss';
+@import 'app/scss/buttons.scss';
+@import 'app/scss/backgrounds.scss';
+
+// * {
+//   margin: 0;
+//   padding: 0;
+//   box-sizing: border-box;
+// }
+
+// html, body {
+//   margin: 0;
+//   padding: 0;
+//   height: 100%;
+//   overflow: hidden; // Prevents any unwanted scrolling
+// }
+
+input.form-control,
+textarea.form-control {
+  background-color: $cyb-background-light !important;
+}
+
+.null-summary-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  .null-table {
+    width: 90%;
+    border-collapse: separate;
+    border-spacing: 5px; // adds space between columns
+    border: 1px solid #ccc;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 5px;
+
+    th, td {
+      padding: 5px;
+      border: 1px solid #ccc;
+      min-width: 100px;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+      padding: 5px;
+    }
+  }
+}

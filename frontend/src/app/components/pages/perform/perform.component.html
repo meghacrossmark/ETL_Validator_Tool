@@ -1,0 +1,403 @@
+<div class="container-fluid py-4">
+  <form [formGroup]="connectionForm" class="p-4 rounded shadow" (ngSubmit)="onConnect()">
+
+    <div id="operationContainer" class="mb-4 col-md-6">
+      <label for="operation" class="font-semibold-large-primary text-center mb-2">Select The Test To Perform</label>
+      <div class="position-relative">
+        <select id="operation" class="form-select bg-cyb-navy font-medium-large-white border-secondary text-center"
+          formControlName="operation" (change)="onOperationChange($event)">
+          <option value="">Select Test</option>
+          <option *ngFor="let operation of functionList" [value]="operation.funct_value">
+            {{ operation.funct_name}}
+          </option>
+        </select>
+        <!-- Font Awesome caret icon -->
+        <i
+          class="fa-solid fa-caret-down position-absolute top-50 end-0 translate-middle-y me-3 text-white pointer-events-none"></i>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="connectionForm.get('operation')?.value">
+
+      <div [ngClass]="{'col-md-12': !showTargetConnection, 'col-md-6': showTargetConnection}">
+        <app-connection-form #sourceConnectionForm [type]="'source'"
+          [selectedTestToPerform]="this.selectedFunction?.funct_value" [operation]="this.selectedFunction?.funct_type"
+          (fileUploadCompleted)="onSourceFileUploadCompleted($event)" (formReady)="onSourceFormReady($event)">
+        </app-connection-form>
+      </div>
+
+      <div class="col-md-6" *ngIf="showTargetConnection">
+        <app-connection-form #targetConnectionForm *ngIf="showTargetConnection" [type]="'target'"
+          [operation]="this.selectedFunction?.funct_type" (fileUploadCompleted)="onTargetFileUploadCompleted($event)"
+          (formReady)="onTargetFormReady($event)">
+        </app-connection-form>
+      </div>
+    </div>
+
+
+
+    <!-- Dynamic Parameters Section -->
+    <div
+      *ngIf="selectedParams && dynamicForm && isTestParametersVisible && this.selectedFunction?.funct_value!=='compare_count'"
+      class="mb-3 container-xl text-center">
+      <div class="row">
+        <div>
+          <div>
+            <h5 class="font-semibold-large-primary mb-1">Test Parameters</h5>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="dynamicForm">
+        <div class="row">
+          <div class="col-md-12 row">
+            <div *ngFor="let param of getParamEntries()"
+              [ngClass]="getParamEntries().length > 1 ? 'col-md-6' : 'col-md-12'" class="mb-3">
+
+              <!-- Text Input Fields -->
+              <!-- <div *ngIf="param.type === 'Input'" class="form-group">
+             <label [for]="param.key" class="form-label font-medium-large-primary">
+               {{ param.label }}
+             </label>
+             <input 
+               [id]="param.key"
+               type="text" 
+               class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" 
+               [formControlName]="param.key"
+               [placeholder]="param.description">
+           </div> -->
+
+              <!-- Number Input Fields -->
+              <div *ngIf="param.type === 'NumberBox'" class="form-group">
+                <label [for]="param.key" class="form-label font-medium-large-primary">
+                  {{ param.label }}
+                </label>
+                <input [id]="param.key" type="number"
+                  class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary"
+                  [formControlName]="param.key" [placeholder]="param.description" step="any">
+              </div>
+
+              <!-- Dropdown Fields -->
+              <!-- <div *ngIf="param.type === 'Dropdown'" class="form-group">
+             <label [for]="param.key" class="form-label font-medium-large-primary">
+               {{ param.label }}
+             </label>
+             <div class="position-relative">
+               <select 
+                 [id]="param.key"
+                 class="form-select bg-cyb-navy font-bold-large-white border-secondary text-center" 
+                 [formControlName]="param.key">
+                 <option value="">{{ param.label }}...</option>
+                 <option *ngFor="let option of getDropdownOptions(param.key)" [value]="option">
+                   {{ option }}
+                 </option>
+               </select>
+               <i class="fa-solid fa-caret-down position-absolute top-50 end-0 translate-middle-y me-3 text-white pointer-events-none"></i>
+             </div>
+           </div> -->
+
+              <!-- Replace your existing Select Column Headers section with this -->
+              <!-- Enhanced Dropdown Fields with Multi-Select for Header-related Parameters -->
+              <!-- <div *ngIf="param.type === 'Dropdown'" class="form-group" style="margin-right: -27px;">
+               <label [for]="param.key" class="form-label font-medium-large-primary">
+                 {{ param.label }}
+               </label>
+
+               Multi-Select Dropdown for Header Parameters
+               <div id="selectKeyColumnContainer" class="custom-dropdown position-relative">
+                 <div type="button"
+                   class="form-select bg-cyb-navy font-medium-large-white border-secondary text-start d-flex justify-content-between align-items-center"
+                   (click)="toggleHeaderDropdown(param.key)" [attr.aria-expanded]="isDropdownOpen[param.key]">
+                    //work on it
+                   <div class="d-flex w-100 justify-content-center">
+                     <span>{{ getSelectedHeadersText(param.key) }}</span>
+                   </div>
+                   
+                   <i class="fa-solid text-white transition-transform position-relative"
+                     [ngClass]="isDropdownOpen[param.key] ? 'fa-caret-up' : 'fa-caret-down'" style="right: -20px;">
+                   </i>
+                 </div>
+
+                 <div class="dropdown-menu position-absolute w-100 mt-1 border border-secondary bg-white shadow-lg"
+                   [ngClass]="{'show': isDropdownOpen[param.key]}"
+                   style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+
+                   <div *ngFor="let option of getDropdownOptions(param.key)"
+                     class="dropdown-item-custom px-3 py-2 d-flex align-items-center gap-2 hover-bg-light cursor-pointer">
+
+                     <input type="checkbox" class="form-check-input me-2" [id]="param.key + '-' + option"
+                       [checked]="isHeaderSelected(param.key, option)"
+                       (change)="onHeaderCheckboxChange(param.key, option, $event)" (click)="$event.stopPropagation()">
+
+                     <label [for]="param.key + '-' + option"
+                       class="form-check-label font-medium-medium-primary mb-0 cursor-pointer">
+                       {{ option }}
+                     </label>
+                   </div>
+
+                   <div *ngIf="getDropdownOptions(param.key).length === 0"
+                     class="px-3 py-2 text-muted font-medium-medium-primary">
+                     No options available
+                   </div>
+                 </div>
+               </div>
+    Update the dropdown section in your template -->
+              <div *ngIf="param.type === 'Dropdown'" class="form-group" style="margin-right: -27px;">
+                <label [for]="param.key" class="form-label font-medium-large-primary">
+                  {{ param.label }}
+                  <!-- Add required indicator -->
+                  <span *ngIf="isFieldRequired(param.key)" class="text-danger">*</span>
+                </label>
+
+                <!-- Multi-Select Dropdown for Header Parameters -->
+                <div id="selectKeyColumnContainer" class="custom-dropdown position-relative">
+                  <div type="button"
+                    class="form-select border-secondary text-start d-flex justify-content-between align-items-center"
+                    [ngClass]="{ 
+                 'bg-cyb-navy font-medium-large-white': !isFieldRequired(param.key) || hasSelectedKeyColumns, 
+                 'bg-danger font-medium-large-white border-danger': isFieldRequired(param.key) && !hasSelectedKeyColumns 
+                 }" (click)="toggleHeaderDropdown(param.key)" [attr.aria-expanded]="isDropdownOpen[param.key]">
+
+                    <div class="d-flex w-100 justify-content-center font-medium-large-white">
+                      <span>{{ getSelectedHeadersText(param.key) }}</span>
+                    </div>
+
+                    <i class="fa-solid text-white transition-transform position-relative"
+                      [ngClass]="isDropdownOpen[param.key] ? 'fa-caret-up' : 'fa-caret-down'" style="right: -20px;">
+                    </i>
+                  </div>
+
+                  <div class="dropdown-menu position-absolute w-100 mt-1 border border-secondary bg-white shadow-lg"
+                    [ngClass]="{'show': isDropdownOpen[param.key]}"
+                    style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                    <!-- Select All Checkbox -->
+                    <div class="dropdown-item-custom px-3 py-2 d-flex align-items-center gap-2 border-bottom"
+                      *ngIf="selectedParams[param.key].includes('MultiSelect')">
+                      <input type="checkbox" class="form-check-input me-2" [id]="'select-all-' + param.key"
+                        [checked]="areAllOptionsSelected(param.key)" (change)="onSelectAllHeaders(param.key, $event)">
+
+                      <label [for]="'select-all-' + param.key"
+                        class="form-check-label font-medium-medium-primary mb-0 cursor-pointer">
+                        Select All
+                      </label>
+                    </div>
+                    <div *ngFor="let option of getDropdownOptions(param.key); trackBy: trackByOption"
+                      class="dropdown-item-custom px-3 py-2 d-flex align-items-center gap-2 hover-bg-light cursor-pointer">
+
+                      <input type="checkbox" class="form-check-input me-2" [id]="param.key + '-' + option"
+                        [checked]="isHeaderSelected(param.key, option)"
+                        (change)="onHeaderCheckboxChange(param.key, option, $event)">
+
+                      <label [for]="param.key + '-' + option"
+                        class="form-check-label font-medium-medium-primary mb-0 cursor-pointer">
+                        {{ option }}
+                      </label>
+                    </div>
+
+                    <div *ngIf="getDropdownOptions(param.key).length === 0"
+                      class="px-3 py-2 text-muted font-medium-medium-primary">
+                      No options available
+                    </div>
+                  </div>
+                </div>
+                <!-- Selected Badges -->
+                <div class="mt-2" *ngIf="getSelectedHeaders(param.key)?.length">
+                  <span *ngFor="let item of getSelectedHeaders(param.key)" class="badge bg-secondary me-1">
+                    {{ item }}
+                  </span>
+                </div>
+              
+              <!-- Regular Single-Select Dropdown for Non-Header Parameters -->
+              <!-- <div *ngIf="!isMultiSelectParam(param.key)" class="position-relative">
+                   <select 
+                     [id]="param.key"
+                     class="form-select bg-cyb-navy font-bold-large-white border-secondary text-center" 
+                     >
+                     
+                     <option value="">{{ param.label }}...</option>
+                     <option *ngFor="let option of getDropdownOptions(param.key)" [value]="option">
+                       {{ option }}
+                     </option>
+                   </select>
+                   <i class="fa-solid fa-caret-down position-absolute top-50 end-0 translate-middle-y me-3 text-white pointer-events-none"></i>
+                 </div> -->
+            </div>
+
+            <!-- Checkbox Fields -->
+            <div *ngIf="param.type === 'CheckBox'" class="form-group">
+              <div class="form-check">
+                <input [id]="param.key" type="checkbox" class="m-1" [formControlName]="param.key">
+                <label [for]="param.key" class="form-check-label font-medium-medium-primary">
+                  {{ param.label }}
+                </label>
+              </div>
+              <small *ngIf="param.description" class="form-text text-muted">{{ param.description }}</small>
+            </div>
+
+          </div>
+        </div>
+    </div>
+  </form>
+</div>
+<!-- Buttons -->
+<div class="d-flex gap-2 mb-3 col-md-12">
+  <div class="col-md-4"></div>
+  <!-- <button type="button" *ngIf="isConnectBtnVisible" id="btn_connect" *ngIf="showButtons"
+        class="btn btn-primary font-medium-large-white col-md-2 p-2" (click)="onConnect()">{{ connectButtonText
+        }}</button> -->
+  <button type="button" id="btn_connect" *ngIf="isConnectBtnVisible"
+    class="btn btn-primary font-medium-large-white col-md-2 p-2" (click)="onConnect()">{{ connectButtonText
+    }}</button>
+  <button *ngIf="isPerformBtnVisible" type="button" id="performButton"
+    class="btn btn-success font-medium-large-white col-md-2" (click)="onPerform()">Perform Test</button>
+  <div class="col-md-4"></div>
+</div>
+
+<!-- Legacy Fields (kept for backward compatibility)
+  <div *ngIf="!selectedParams">
+    Check Duplicate Fields (maps to headers)
+    <div id="checkDuplicateContainer" *ngIf="connectionForm.get('operation')?.value === 'check_duplicate'" class="mb-3">
+      <label for="header" class="form-label font-medium-large-primary">Select Table Column Header:</label>
+      <input type="text" id="header" class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" formControlName="header">
+    </div>
+
+    Check Count/Data Compare Fields (maps to tbl_primary_key)
+    <div id="dataCompareContainer" *ngIf="connectionForm.get('operation')?.value === 'data_compare'" class="mb-3">
+
+      <div class="mb-3">
+        <label for="selectColumn" class="form-label font-medium-large-primary">Primary Key Source</label>
+        <input type="text" id="selectColumn" class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" formControlName="selectColumn">
+        
+        <label for="selectColumn" class="form-label font-medium-large-primary">Primary Key Target</label>
+        <input type="text" id="selectColumn" class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" formControlName="selectColumn">
+      </div>
+    
+      <div class="mb-3">
+        <label for="absTol" class="form-label font-medium-large-primary">Absolute Tolerance:</label>
+        <input type="number" id="absTol" class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" formControlName="absTol" step="any">
+      </div>
+    
+      <div class="mb-3">
+        <label for="relTol" class="form-label font-medium-large-primary">Relative Tolerance:</label>
+        <input type="number" id="relTol" class="form-control bg-cyb-backgroud-light font-medium-medium-primary border-secondary" formControlName="relTol" step="any">
+      </div>
+    
+      <div class="form-check mb-3">
+        <input type="checkbox" id="ignoreSpaces" class="form-check-input" formControlName="ignoreSpaces">
+        <label for="ignoreSpaces" class="form-check-label font-medium-medium-primary">Ignore Spaces</label>
+      </div>
+    
+      <div class="form-check mb-3">
+        <input type="checkbox" id="ignoreCase" class="form-check-input" formControlName="ignoreCase">
+        <label for="ignoreCase" class="form-check-label font-medium-medium-primary">Ignore Case</label>
+      </div>
+    
+      <div class="form-check mb-3">
+        <input type="checkbox" id="castColumnNamesLower" class="form-check-input" formControlName="castColumnNamesLower">
+        <label for="castColumnNamesLower" class="form-check-label font-medium-medium-primary">Cast Column Names to Lowercase</label>
+      </div>
+    
+    </div>
+  </div> -->
+
+<!-- Query Container (maps to query for source and target) -->
+<div id="queryContainer" *ngIf="sourceQuery || targetQuery" class="mb-3">
+  <div id="queryContainerSource" *ngIf="sourceQuery">
+    <label for="queryInpSource" class="form-label font-medium-large-primary">Generated Query (Source):</label>
+    <div id="queryInpSource" class="p-2 border rounded bg-light font-medium-large-primary">{{ sourceQuery }}</div>
+  </div>
+  <div id="queryContainerTarget" *ngIf="targetQuery">
+    <label for="queryInpTarget" class="form-label font-medium-large-primary">Generated Target Query:</label>
+    <div id="queryInpTarget" class="p-2 border rounded bg-light font-medium-large-primary">{{ targetQuery }}</div>
+  </div>
+</div>
+
+
+
+<!-- Result Container -->
+
+
+<!-- <div id="resultContainer" *ngIf="isResultHeaderVisible" class="mb-3"> -->
+<!-- <label for="result" class="form-label font-medium-large-primary">Execution Status:</label>
+      <div id="resultHeader" class="font-medium-large-primary">{{ resultHeader }}</div> -->
+<!-- <div id="result" class="p-2 border rounded bg-light font-medium-large-primary">{{ result }}</div> -->
+<!-- Execution Status Header -->
+<!-- <div id="resultContainer" *ngIf="resultHeader" class="mb-4">
+      <div class="mb-3">
+        <h5 class="font-semibold-large-primary mb-2">Execution Status</h5>
+        <div id="resultHeader" class="fs-6 text-dark">
+          {{ resultHeader }}
+        </div>
+      </div>
+      spinner
+      <div class="d-flex justify-content-center" *ngIf="showSpinner">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div> -->
+<!-- Updated spinner section with duration display -->
+<!-- Updated spinner section with duration display -->
+<div id="resultContainer" *ngIf="resultHeader" class="mb-4">
+  <!-- Execution Status Header -->
+  <div class="mb-3">
+    <h5 class="font-semibold-large-primary mb-2">Execution Status</h5>
+    <div id="resultHeader" class="fs-6 text-dark">
+      {{ resultHeader }}
+    </div>
+  </div>
+
+  <!-- Spinner with duration -->
+  <div class="d-flex justify-content-center align-items-center flex-column" *ngIf="showSpinner">
+    <div class="spinner-border mb-2" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+
+    <!-- Optional: Show current duration while spinner is active -->
+    <!-- <div class="text-muted small" *ngIf="spinnerStartTime">
+      Duration: {{ getFormattedCurrentDuration() }}
+    </div> -->
+  </div>
+
+  <!-- Optional: Show last operation duration after completion -->
+  <!-- <div class="text-success small mt-2" *ngIf="!showSpinner && spinnerDuration > 0">
+    <i class="fas fa-clock me-1"></i>
+    Last operation completed in: {{ getFormattedDuration(spinnerDuration) }}
+  </div> -->
+</div>
+
+<!-- Optional: Debug info section (remove in production) -->
+<!-- <div class="mt-3 p-2 bg-light border rounded" *ngIf="false">  Set to true for debugging 
+  <h6>Spinner Debug Info:</h6>
+  <div class="small">
+    <div>Current Status: {{ showSpinner ? 'Active' : 'Inactive' }}</div>
+    <div *ngIf="spinnerStartTime">Start Time: {{ getFormattedStartTime() }}</div>
+    <div *ngIf="spinnerEndTime">End Time: {{ getFormattedEndTime() }}</div>
+    <div *ngIf="spinnerDuration > 0">Last Duration: {{ getFormattedDuration(spinnerDuration) }}</div>
+    <div>Total Session Duration: {{ getFormattedDuration(totalSpinnerTime) }}</div>
+  </div>
+</div> -->
+
+<!-- Optional: Performance statistics card -->
+
+
+<!-- Reset and Query Builder Buttons -->
+<div id="resetDiv" class="d-flex gap-1 col-md-12 p-2">
+  <button id="sourceQueryBuilder" *ngIf="isSourceQueryVisible" class="btn btn-secondary col-md-2 p-2"
+    (click)="openQueryBuilder('source')">Source Query</button>
+  <button id="targetQueryBuilder" *ngIf="isTargetQueryVisible" class="btn btn-secondary col-md-2 p-2"
+    (click)="openQueryBuilder('target')">Target Query</button>
+  <div class="col-md-7 p-2"></div> <!--Empty Placeholder for UI-->
+  <!-- <button id="resetButton" *ngIf="resetButton"  class="btn btn-danger font-medium-large-white col-md-1 p-2"
+        (click)="onReset()">Reset</button> -->
+  <button id="resetButton" *ngIf="showButtons" class="btn btn-danger font-medium-large-white col-md-1 p-2"
+    (click)="onReset()">Reset</button>
+</div>
+
+<app-query-builder #queryBuilder [columns]="columns" [queryType]="queryType" *ngIf="showModal"></app-query-builder>
+<app-report *ngIf="isReportVisible" [resultHeader]="resultHeaderReports" [reportData]="resultReports"
+  [show]="showReports" [spinnerDuration]="spinnerDuration" [totalSpinnerTime]="totalSpinnerTime"
+  [formatFn]="getFormattedDuration.bind(this)" (downloadStarted)="onDownloadStart()"
+  (downloadFinished)="onDownloadFinish()"></app-report>
+
+</form>

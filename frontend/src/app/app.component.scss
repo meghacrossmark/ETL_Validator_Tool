@@ -1,0 +1,12 @@
+@import './styles.scss';
+
+.container-fluid {
+    background-color: #212529;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+.app-container {
+  // border: 10px solid $cyb-navy;
+  box-sizing: border-box;
+}

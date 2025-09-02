@@ -1,0 +1,119 @@
+@use '../../../../styles.scss' as *;
+
+// Main component styling
+.history-container {
+  // Variables using custom colors
+  $primary-color: $cyb-navy;
+  $secondary-color: $cyb-secondary-blue;
+  $success-color: $cyb-success;
+  $error-color: $cyb-error; 
+  $warning-color: $cyb-warning;
+  $accent-color: $cyb-blue;
+  
+  // Container styling
+  background-color: $cyb-background-light;
+  padding: 2rem;
+  border-radius: .5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  // Responsive typography
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+  
+  // Filters section
+  .filters-section {
+    background-color: rgba($cyb-background-white, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    input,
+    select {
+      transition: all 0.3s ease;
+      background-color: $cyb-background-white !important;
+      
+      &:focus {
+                box-shadow: 0 0 0 0.2rem rgba($cyb-background-white, 0.25);
+      }
+    }
+  }
+  
+  // Table styling
+  .table {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: .5rem;
+    overflow: hidden;
+    
+    thead {
+      th {
+        background-color: $primary-color;
+        color: white;
+        vertical-align: middle;
+      }
+    }
+    
+    // Hover effect for table rows
+    tbody {
+      tr {
+        transition: background-color 0.3s ease;
+        
+        &:hover {
+          // background-color: rgba($accent-color, 0.1);
+          // transform: translateY(-1px);
+          // box-shadow: 0 2px 8px rgba(0, 185, 242, 0.15);
+        }
+      }
+    }
+    
+    // Status badge styling
+    .badge {
+      &.bg-success {
+        background-color: $success-color !important;
+      }
+      
+      &.bg-warning {
+        background-color: $warning-color !important;
+        color: darken($warning-color, 40%) !important;
+      }
+      
+      &.bg-secondary {
+        background-color: $secondary-color !important;
+      }
+      
+      &.bg-danger {
+        background-color: $error-color !important;
+      }
+    }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 992px) {
+    .filters-section {
+      .col-md-3, .col-md-2 {
+        margin-bottom: 10px;
+        width: 100%;
+      }
+    }
+  }
+  
+  // Button styling
+  .btn-primary {
+    background-color: $cyb-blue;
+    border-color: $cyb-blue;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: darken($cyb-blue, 10%);
+      border-color: darken($cyb-blue, 10%);
+    }
+  }
+  
+  // No records alert
+  .alert-info {
+    background-color: rgba($accent-color, 0.1);
+    border-color: $accent-color;
+    color: $primary-color;
+  }
+}

@@ -1,0 +1,90 @@
+@use '../../../../styles.scss' as *;
+
+.accordion-button {
+  &.collapsed {
+    // Optional: styles for the collapsed state (default)
+  }
+
+  &:not(.collapsed) {
+    background-color: $cyb-navy;
+    color: #fff; // Adjust text color for contrast
+  }
+
+  &:focus {
+    box-shadow: none; // Removes default focus ring
+  }
+}
+
+.accordion-button {
+  &::after {
+    // Invert the default black arrow to white
+    //filter: brightness(0) invert(1);
+  }
+
+  &:not(.collapsed)::after {
+    // Keep it white when the accordion is open
+     filter: brightness(0) invert(1);
+  }
+}
+
+.report-container {
+  background-color: $cyb-background-light;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bg-cyb-white {
+  background-color: $cyb-background-white;
+}
+
+$card-bg: $cyb-background-white;
+$card-radius: 12px;
+$card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+.card {
+  border-radius: $card-radius;
+  background-color: $card-bg;
+  box-shadow: $card-shadow;
+
+  &-body {
+    padding: 1rem;
+  }
+
+  .card-text {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .fw-bold {
+    font-weight: 600;
+  }
+}
+
+.null-summary-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  .null-table {
+    width: 90%;
+    border-collapse: separate;
+    border-spacing: 1rem; // adds space between columns
+    border: 1px solid #ccc;
+    text-align: center;
+    background-color: #fff;
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      min-width: 100px;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+      padding: 20px;
+    }
+  }
+}
+
+

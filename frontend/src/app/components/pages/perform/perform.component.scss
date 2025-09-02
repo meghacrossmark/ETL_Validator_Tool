@@ -1,0 +1,111 @@
+@import 'styles.scss';
+  
+  .form {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem $cyb-navy;
+  }
+  
+  .form-select,
+  .form-control {
+    background-color: $cyb-background-gray;
+    border-color: $cyb-navy;
+    color: $cyb-background-white;
+    .input{
+      color: $cyb-navy;
+    }
+  }
+  
+  .form-select:focus,
+  .form-control:focus {
+    border-color: $cyb-success;
+    background-color: #6c757d;
+    box-shadow: none;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #ffa500;
+  }
+  
+  #result,
+  .queryInput {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  #operationContainer, #selectKeyColumnContainer {
+    max-width: 400px;            // control width
+    margin: 0 auto;              // horizontal center
+   
+    text-align: center;
+  
+    .form-label {
+      // display: block;
+      // margin-bottom: 0.5rem;
+      // font-weight: 600;
+      @extend .font-medium-large-primary
+    }
+  
+    .form-select {
+      width: 100%;               
+      // padding: 0.5rem;
+      border-radius: 4px;
+      
+    }
+  }
+
+#performButton {
+  margin: 0 auto;
+}
+
+#btn_connect{
+  margin: 0 auto;
+  @extend .font-medium-large-white
+}
+
+#btn_connect .connecting{
+  background-color: $cyb-warning;
+  color: $cyb-navy;
+}
+
+#resetButton{
+  margin-left: auto
+}
+  
+.test_parameter_container{
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dropdown-menu {
+  // Maintain scroll position
+  scroll-behavior: auto !important;
+  
+  .dropdown-item-custom {
+    // Prevent focus jumping
+    &:focus {
+      outline: 1px solid #007bff;
+      background-color: #f8f9fa;
+    }
+    
+    input[type="checkbox"] {
+      // Prevent checkbox from stealing focus
+      &:focus {
+        outline: none;
+      }
+    }
+    
+    label {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+}
+
+// Optional: Add smooth transitions
+.dropdown-item-custom {
+  transition: background-color 0.1s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+}

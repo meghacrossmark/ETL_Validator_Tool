@@ -1,0 +1,863 @@
+<div class="container-fluid report-container" *ngIf="reportData">
+  <div>
+    <h2 class="text-center" *ngIf="reportData?.type_of_test=='quality' && reportData?.Test.operation=='check_null'">
+      Report For
+      {{reportData?.result_metadata.operation}}</h2>
+  </div>
+  <div>
+    <h2 class="text-center"
+      *ngIf="reportData?.type_of_test=='quality' && reportData?.Test.operation=='check_data_type'">Report For
+      {{reportData?.Test.operation | underscoreToTitleCase}}</h2>
+  </div>
+  <div class="position-relative p-2 text-center">
+    <!-- Centered Heading -->
+    <h2 class="mb-0" *ngIf="reportData?.type_of_test === 'compare'">
+      Report for {{ reportData?.Test.operation | formatLabel | reorderWords }}
+    </h2>
+
+    <!-- Right-aligned Export controls -->
+    <div class="position-absolute top-0 end-0 d-flex align-items-center gap-2 p-2"
+      *ngIf="reportData?.Test.operation === 'compare_data'">
+      <select class="form-select w-auto" [(ngModel)]="selectedFormat">
+        <option value="" disabled selected>Select File Format</option>
+        <option value="excel">Excel</option>
+        <option value="csv">CSV</option>
+      </select>
+      <button class="btn btn-primary" (click)="downloadReport()">Export</button>
+    </div>
+  </div>
+  <div>
+    <h2 class="text-center"
+      *ngIf="reportData?.type_of_test=='quality' && reportData?.Test.operation=='check_duplicate'">Report For
+      {{reportData?.Test.operation |
+      formatLabel | reorderWords}}</h2>
+  </div>
+  <div class="row status-row p-2">
+    <div class="col-2 fw-bold">
+      Scenario Performed:
+    </div>
+    <div class="col-1 d-flex align-items-center">
+      <span>{{reportData?.type_of_test | titlecase}}</span>
+    </div>
+  </div>
+  <div class="row status-row p-2"
+    *ngIf="reportData?.type_of_test=='quality' && reportData?.Test.operation=='check_null'">
+    <div class="col-2 fw-bold">
+      Operation Performed:
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span>{{reportData?.result_metadata.operation}}</span>
+    </div>
+  </div>
+  <div class="row status-row p-2"
+    *ngIf="reportData?.type_of_test=='quality' && reportData?.Test.operation=='check_data_type'">
+    <div class="col-2 fw-bold">
+      Operation Performed:
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span>{{reportData?.Test.operation | underscoreToTitleCase}}</span>
+    </div>
+  </div>
+  <!-- for duplicate check -->
+  <div class="row status-row p-2" *ngIf="reportData?.Test.operation=='check_duplicate'">
+    <div class="col-2 fw-bold">
+      Operation Performed:
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span>{{reportData?.Test.operation | formatLabel | reorderWords}}</span>
+    </div>
+  </div>
+  <div class="row status-row p-2" *ngIf="reportData?.Test?.operation === 'check_data_type' && testedColumnName">
+    <div class="col-2 fw-bold">
+      Column Being Tested:
+    </div>
+    <div class="col-4 d-flex align-items-center">
+      <span>{{ testedColumnName | formatLabel}}</span>
+    </div>
+  </div>
+  <!-- for count and data compare -->
+  <div class="row status-row p-2" *ngIf="reportData?.type_of_test=='compare'">
+    <div class="col-2 fw-bold">
+      Operation Performed:
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span>{{reportData?.Test.operation | formatLabel | reorderWords}}</span>
+    </div>
+  </div>
+  <!-- Selected Columns Row -->
+  <div class="row status-row p-2"
+    *ngIf="reportData?.Test.operation === 'check_null' || reportData?.Test.operation === 'check_duplicate'">
+    <div class="col-2 fw-bold">
+      Selected Column(s):
+    </div>
+    <div class="col-10 d-flex align-items-center">
+      <span>{{ reportData?.Test.test_params.column_to_test.join(', ') }}</span>
+    </div>
+  </div>
+  <div class="row status-row p-2"
+  *ngIf="reportData?.Test?.operation === 'compare_data'">
+<div class="col-2 fw-bold">
+ Selected Column(s) at Source:
+</div>
+<div class="col-10 d-flex align-items-center">
+ <span>{{ reportData?.Test?.test_params?.compare_columns_source?.join(', ') }}</span>
+</div>
+</div>
+<div class="row status-row p-2"
+*ngIf="reportData?.Test?.operation === 'compare_data'">
+<div class="col-2 fw-bold">
+Selected Column(s) at Target:
+</div>
+<div class="col-10 d-flex align-items-center">
+<span>{{ reportData?.Test?.test_params?.compare_columns_target?.join(', ') }}</span>
+</div>
+</div>
+  <div class="row justify-content-start p-2"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_null'">
+    <div class="row align-items-center mb-3" *ngIf="nullHeaderInfo?.values?.length">
+      <div class="col-2">
+        <p class="m-0 fw-bold">
+          {{ nullHeaderInfo.label }}
+        </p>
+      </div>
+      <div class="col-10">
+        <p class="m-0">
+          {{ nullHeaderInfo.joinedValues }}
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ reportData?.result_metadata?.columns[0]?.element_count }}</p>
+            <p class="fw-bold mb-0">Total Rows Count</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ headersWithNullCount }}</p>
+            <p class="fw-bold mb-0">Column with Null Values</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion p-2" id="accordionExample"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_null'">
+    <!-- Test Results -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingResults">
+        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseResults" aria-expanded="false" aria-controls="collapseResults">
+          Test Results:
+        </button>
+      </h2>
+      <div id="collapseResults" class="accordion-collapse collapse show" aria-labelledby="headingResults"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="row">
+            <!-- <div class="col-12" [innerHTML]="nullSummaryHtml"></div> -->
+            <div class="mt-3" *ngIf="getNullCounts().length > 0">
+              <h5 class="mb-2">Null Count by Column</h5>
+              <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                  <tr>
+                    <th>Column Name</th>
+                    <th>Null Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of getNullCounts()">
+                    <td>{{ item.column }}</td>
+                    <td>{{ item.nullCount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Optional: No nulls message -->
+            <div class="text-muted fst-italic" *ngIf="getNullCounts().length === 0">
+              No null values found in any column.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- File/Connection Details -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingConnection">
+        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseConnection" aria-expanded="false" aria-controls="collapseConnection">
+          File/Connection Details:
+        </button>
+      </h2>
+      <div id="collapseConnection" class="accordion-collapse collapse" aria-labelledby="headingConnection"
+        data-bs-parent="#accordionExample" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="row justify-content-start p-2" *ngIf="reportData?.type_of_test==='quality'">
+            <!-- Source Column: Takes full width if no target -->
+            <div [ngClass]="reportData?.Connection?.target ? 'col-6' : 'col-12'">
+              <div>
+                <span class="m-0 fw-semibold">Source Connection Details: </span>
+                <span>{{ reportData?.Connection?.source?.conn | titlecase }}</span>
+              </div>
+              <div>
+                <span class="m-0 fw-semibold">Connection Type: </span>
+                <span>{{ reportData?.Connection?.source?.conn_type | titlecase }}</span>
+              </div>
+              <div *ngIf="reportData?.Connection?.source?.conn_params?.selected_fileName">
+                <span class="m-0 fw-semibold">Selected Filename: </span>
+                <span>{{ reportData?.Connection?.source?.conn_params?.selected_fileName | titlecase }}</span>
+              </div>
+            </div>
+            <!-- Target Column: Only shown if target exists -->
+            <div class="col-6" *ngIf="reportData?.Connection?.target">
+              <div>
+                <span class="m-0 fw-semibold">Target Connection Details: </span>
+                <span>{{ reportData?.Connection?.target?.conn | titlecase }}</span>
+              </div>
+              <div>
+                <span class="m-0 fw-semibold">Connection Type: </span>
+                <span>{{ reportData?.Connection?.target?.conn_type | titlecase }}</span>
+              </div>
+              <div>
+                <span class="m-0 fw-semibold">Selected Filename: </span>
+                <span>{{ reportData?.Connection?.target?.conn_params.selected_fileName | titlecase }}</span>
+              </div>
+              <div>
+                <span class="m-0 fw-semibold">Table Name: </span>
+                <span>{{ reportData?.Connection?.target?.table_name || 'Not getting data' }}</span>
+              </div>
+              <div>
+                <span class="m-0 fw-semibold">Table Primary Key: </span>
+                <span>{{ reportData?.Connection?.target?.tbl_primary_key || 'not getting data' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Query Details -->
+    <div class="accordion-item" *ngIf="reportData?.Connection?.source?.query || reportData?.Connection?.target?.query">
+      <h2 class="accordion-header" id="headingQuery">
+        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseQuery" aria-expanded="false" aria-controls="collapseQuery">
+          Query Details(If Any):
+        </button>
+      </h2>
+      <div id="collapseQuery" class="accordion-collapse collapse" aria-labelledby="headingQuery"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="row justify-content-start p-2">
+
+            <!-- Source Query Column -->
+            <div class="col-6">
+              <div>
+                <span class="m-0 fw-semibold">Source Query Details: </span>
+                <span>{{ reportData?.Connection?.source?.query }}</span>
+              </div>
+            </div>
+            <!-- Target Query Column -->
+            <div class="col-6">
+              <div>
+                <span class="m-0 fw-semibold">Target Query Details: </span>
+                <span>{{ reportData?.Connection?.target?.query }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-start p-2"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_duplicate'">
+    <div class="row">
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ getTotalElementCount(reportData) }}</p>
+            <p class="fw-bold mb-0">Total Rows Count</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion p-2" id="accordionExample"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_duplicate'">
+    <!-- Test Results -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingResults">
+        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseResults" aria-expanded="false" aria-controls="collapseResults">
+          Test Results:
+        </button>
+      </h2>
+      <div id="collapseResults" class="accordion-collapse collapse show" aria-labelledby="headingResults"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="row">
+            <div [innerHTML]="generateDuplicateTableHtml(reportData)"></div>
+          </div>
+        </div>
+      </div>
+      <!-- File/Connection Details -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingConnection">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseConnection" aria-expanded="false" aria-controls="collapseConnection">
+            File/Connection Details:
+          </button>
+        </h2>
+        <div id="collapseConnection" class="accordion-collapse collapse" aria-labelledby="headingConnection"
+          data-bs-parent="#accordionExample" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <div class="row justify-content-start p-2" *ngIf="reportData?.type_of_test==='quality'">
+              <!-- Source Column: Takes full width if no target -->
+              <div [ngClass]="reportData?.Connection?.target ? 'col-6' : 'col-12'">
+                <div>
+                  <span class="m-0 fw-semibold">Source Connection Details: </span>
+                  <span>{{ reportData?.Connection?.source?.conn | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Connection Type: </span>
+                  <span>{{ reportData?.Connection?.source?.conn_type | titlecase }}</span>
+                </div>
+                <div *ngIf="reportData?.Connection?.source?.conn_params?.selected_fileName">
+                  <span class="m-0 fw-semibold">Selected Filename: </span>
+                  <span>{{ reportData?.Connection?.source?.conn_params?.selected_fileName | titlecase }}</span>
+                </div>
+              </div>
+              <!-- Target Column: Only shown if target exists -->
+              <div class="col-6" *ngIf="reportData?.Connection?.target">
+                <div>
+                  <span class="m-0 fw-semibold">Target Connection Details: </span>
+                  <span>{{ reportData?.Connection?.target?.conn | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Connection Type: </span>
+                  <span>{{ reportData?.Connection?.target?.conn_type | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Selected Filename: </span>
+                  <span>{{ reportData?.Connection?.target?.conn_params.selected_fileName | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Table Name: </span>
+                  <span>{{ reportData?.Connection?.target?.table_name || 'Not getting data' }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Table Primary Key: </span>
+                  <span>{{ reportData?.Connection?.target?.tbl_primary_key || 'not getting data' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Query Details -->
+        <div class="accordion-item"
+          *ngIf="reportData?.Connection?.source?.query || reportData?.Connection?.target?.query">
+          <h2 class="accordion-header" id="headingQuery">
+            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseQuery" aria-expanded="false" aria-controls="collapseQuery">
+              Query Details(If Any):
+            </button>
+          </h2>
+          <div id="collapseQuery" class="accordion-collapse collapse" aria-labelledby="headingQuery"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <div class="row justify-content-start p-2">
+
+                <!-- Source Query Column -->
+                <div class="col-6">
+                  <div>
+                    <span class="m-0 fw-semibold">Source Query Details: </span>
+                    <span>{{ reportData?.Connection?.source?.query }}</span>
+                  </div>
+                </div>
+                <!-- Target Query Column -->
+                <div class="col-6">
+                  <div>
+                    <span class="m-0 fw-semibold">Target Query Details: </span>
+                    <span>{{ reportData?.Connection?.target?.query }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-start p-2"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_data_type'">
+    <div class="row">
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ totalRecordsCount }}</p>
+            <p class="fw-bold mb-0">Total Records Count</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ matchDataTypeCount }}</p>
+            <p class="fw-bold mb-0">Match Data Type Count</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ notMatchingDataTypeCount }}</p>
+            <p class="fw-bold mb-0">Not Matching Data Type Count</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card text-center p-2">
+          <div class="card-body">
+            <p class="card-text fs-5 mb-1">{{ nullCount }}</p>
+            <p class="fw-bold mb-0">Null Count</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion p-2" id="accordionExample"
+    *ngIf="reportData?.type_of_test=='quality' && reportData.Test.operation=='check_data_type'">
+    <!-- Test Results -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingResults">
+        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseResults" aria-expanded="false" aria-controls="collapseResults">
+          Test Results:
+        </button>
+      </h2>
+      <div id="collapseResults" class="accordion-collapse collapse show" aria-labelledby="headingResults"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="mt-3" *ngIf="getTypeMismatchRows().length">
+            <p class="fw-bold">Data Type Summary</p>
+            <table class="table table-bordered table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th class="fw-semibold">Selected Data Type</th>
+                  <th class="fw-semibold">Actual Data Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of getTypeMismatchRows()">
+                  <td>{{ row.expected }}</td>
+                  <td>{{ row.actual }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3" *ngIf="nonMatchingValueCounts.length">
+            <p class="fw-bold">Non-Matching Values With Counts</p>
+            <table class="table table-bordered table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th class="fw-semibold">Value</th>
+                  <th class="fw-semibold">Count</th>
+                  <th class="fw-semibold">Indexes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of nonMatchingValueCounts | slice:0:100">
+                  <td>{{ item.value }}</td>
+                  <td>{{ item.count }}</td>
+                  <td>
+                    <!-- Show first 10 indexes or all if expanded -->
+                    <span *ngFor="let idx of getIndexesToShow(item) ?? []; let i = index">
+                      {{ idx }}<span *ngIf="i < (getIndexesToShow(item)?.length ?? 0) - 1">, </span>
+                    </span>
+                    <!-- Load more / Show less button -->
+                    <div *ngIf="(item.indexes?.length ?? 0) > 10" class="mt-1">
+                      <button class="btn btn-link p-0" (click)="toggleIndexes(item)">
+                        {{ isExpanded(item) ? 'Show Less' : 'Load More' }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- File/Connection Details -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingConnection">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseConnection" aria-expanded="false" aria-controls="collapseConnection">
+            File/Connection Details:
+          </button>
+        </h2>
+        <div id="collapseConnection" class="accordion-collapse collapse" aria-labelledby="headingConnection"
+          data-bs-parent="#accordionExample" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <div class="row justify-content-start p-2" *ngIf="reportData?.type_of_test==='quality'">
+
+              <!-- Source Column: Takes full width if no target -->
+              <div [ngClass]="reportData?.Connection?.target ? 'col-6' : 'col-12'">
+                <div>
+                  <span class="m-0 fw-semibold">Source Connection Details: </span>
+                  <span>{{ reportData?.Connection?.source?.conn | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Connection Type: </span>
+                  <span>{{ reportData?.Connection?.source?.conn_type | titlecase }}</span>
+                </div>
+                <div *ngIf="reportData?.Connection?.source?.conn_params?.selected_fileName">
+                  <span class="m-0 fw-semibold">Selected Filename: </span>
+                  <span>{{ reportData?.Connection?.source?.conn_params?.selected_fileName | titlecase }}</span>
+                </div>
+              </div>
+              <!-- Target Column: Only shown if target exists -->
+              <div class="col-6" *ngIf="reportData?.Connection?.target">
+                <div>
+                  <span class="m-0 fw-semibold">Target Connection Details: </span>
+                  <span>{{ reportData?.Connection?.target?.conn | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Connection Type: </span>
+                  <span>{{ reportData?.Connection?.target?.conn_type | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Selected Filename: </span>
+                  <span>{{ reportData?.Connection?.target?.conn_params.selected_fileName | titlecase }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Table Name: </span>
+                  <span>{{ reportData?.Connection?.target?.table_name || 'Not getting data' }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Headers: </span>
+                  <span>{{ reportData?.Connection?.target?.headers || 'Empty Array' }}</span>
+                </div>
+                <div>
+                  <span class="m-0 fw-semibold">Table Primary Key: </span>
+                  <span>{{ reportData?.Connection?.target?.tbl_primary_key || 'not getting data' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Query Details -->
+        <div class="accordion-item"
+          *ngIf="reportData?.Connection?.source?.query || reportData?.Connection?.target?.query">
+          <h2 class="accordion-header" id="headingQuery">
+            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseQuery" aria-expanded="false" aria-controls="collapseQuery">
+              Query Details(If Any):
+            </button>
+          </h2>
+          <div id="collapseQuery" class="accordion-collapse collapse" aria-labelledby="headingQuery"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <div class="row justify-content-start p-2">
+
+                <!-- Source Query Column -->
+                <div class="col-6">
+                  <div>
+                    <span class="m-0 fw-semibold">Source Query Details: </span>
+                    <span>{{ reportData?.Connection?.source?.query }}</span>
+                  </div>
+                </div>
+                <!-- Target Query Column -->
+                <div class="col-6">
+                  <div>
+                    <span class="m-0 fw-semibold">Target Query Details: </span>
+                    <span>{{ reportData?.Connection?.target?.query }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="reportData?.type_of_test === 'compare' && reportData?.Test?.operation === 'compare_count'"
+    class="container-fluid">
+    <div class="row p-2">
+      <!-- Source Section -->
+      <div class="col-md-6">
+        <p class="mb-1 fw-bold">Source:</p>
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <div class="card text-center h-100 p-2">
+              <div class="card-body">
+                <p class="m-0 fw-bold">{{ reportData?.result_metadata?.source.rows }}</p>
+                <p class="m-0">Source Row Count</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 mb-3">
+            <div class="card text-center h-100 p-2">
+              <div class="card-body">
+                <p class="m-0 fw-bold">{{ reportData?.result_metadata?.source.extra_rows_count }}</p>
+                <p class="m-0">Row Count Difference (vs Target)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Section -->
+      <div class="col-md-6">
+        <p class="mb-1 fw-bold">Target:</p>
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <div class="card text-center h-100 p-2">
+              <div class="card-body">
+                <p class="m-0 fw-bold">{{ reportData?.result_metadata?.target.rows }}</p>
+                <p class="m-0">Target Row Count</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 mb-3">
+            <div class="card text-center h-100 p-2">
+              <div class="card-body">
+                <p class="m-0 fw-bold">{{ reportData?.result_metadata?.target.extra_rows_count }}</p>
+                <p class="m-0">Row Count Difference (vs Source)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- data compare report -->
+  <!-- <div class="row justify-content-start p-2"
+    *ngIf="reportData?.type_of_test=='compare' && reportData.Test.operation=='compare_data'">
+
+     <div class="col-3">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{reportData.result_metadata.matched_rows}}</p>
+          <p class="m-0 fw-semibold">Matched Rows Count</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{reportData.result_metadata.target.not_in_source}}</p>
+          <p class="m-0 fw-semibold">Rows missing in Source</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{ reportData.result_metadata.source.not_in_target}}</p>
+          <p class="m-0 fw-semibold">Rows missing in Target</p>
+        </div>
+      </div>
+    </div> 
+    <div class="col-3" *ngIf="reportData?.result_metadata?.matched_rows > 0">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{ reportData.result_metadata.matched_rows }}</p>
+          <p class="m-0 fw-semibold">Matched Rows Count</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-3" *ngIf="reportData?.result_metadata?.target?.not_in_source > 0">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{ reportData.result_metadata.target.not_in_source }}</p>
+          <p class="m-0 fw-semibold">Rows missing in Source</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-3" *ngIf="reportData?.result_metadata?.source?.not_in_target > 0">
+      <div class="card text-center p-2">
+        <div class="card-body">
+          <p class="m-0 fw-bold">{{ reportData.result_metadata.source.not_in_target }}</p>
+          <p class="m-0 fw-semibold">Rows missing in Target</p>
+        </div>
+      </div>
+    </div>
+  </div> -->
+ 
+<!-- Show error if backend sent error -->
+<!-- <div *ngIf="hasError" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <i class="fas fa-exclamation-triangle me-2"></i>
+  <strong>Error:</strong> {{ errorMessage || 'Unknown error occurred' }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div> -->
+
+<!-- Replace the data compare report section in your template with this updated version -->
+
+<!-- data compare report -->
+<div class="row justify-content-start p-2"
+  *ngIf="!hasError && reportData?.type_of_test=='compare' && reportData.Test.operation=='compare_data'">
+
+  <div class="col-3" *ngIf="reportData?.result_metadata?.matched_rows >= 0">
+    <div class="card text-center p-2">
+      <div class="card-body">
+        <p class="m-0 fw-bold">{{ reportData.result_metadata.matched_rows }}</p>
+        <p class="m-0 fw-semibold">Matched Rows Count</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-3" *ngIf="reportData?.result_metadata?.target?.not_in_source >= 0">
+    <div class="card text-center p-2">
+      <div class="card-body">
+        <p class="m-0 fw-bold">{{ reportData.result_metadata.target.not_in_source }}</p>
+        <p class="m-0 fw-semibold">Rows missing in Source</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-3" *ngIf="reportData?.result_metadata?.source?.not_in_target >= 0">
+    <div class="card text-center p-2">
+      <div class="card-body">
+        <p class="m-0 fw-bold">{{ reportData.result_metadata.source.not_in_target }}</p>
+        <p class="m-0 fw-semibold">Rows missing in Target</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Show error if backend sent error -->
+<div *ngIf="hasError" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <i class="fas fa-exclamation-triangle me-2"></i>
+  <strong>Error:</strong> {{ errorMessage || 'Unknown error occurred' }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="accordion" id="accordionExample"
+  *ngIf="!hasError && reportData?.type_of_test == 'compare' && reportData.Test.operation == 'compare_data'">
+
+  <!-- Case: Rows not present in Source -->
+  <div class="accordion-item" *ngIf="missingInSourceFormatted.length >= 0">
+    <h2 class="accordion-header" id="headingMissingSource">
+      <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapseMissingSource" aria-expanded="true" aria-controls="collapseMissingSource">
+        Rows not present in Source:
+      </button>
+    </h2>
+    <div id="collapseMissingSource" class="accordion-collapse collapse show"
+      aria-labelledby="headingMissingSource" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <!-- Add scrollable wrapper -->
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+          <table class="table table-striped table-bordered table-hover">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th *ngFor="let header of tableHeaders" class="fw-bold text-nowrap" 
+                    style="min-width: 120px; white-space: nowrap;">
+                  {{ header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of missingInSourceFormatted; trackBy: trackByIndex">
+                <td *ngFor="let header of tableHeaders" class="text-nowrap" 
+                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;"
+                    [title]="row[header]">
+                  {{ row[header] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Row count info -->
+        <div class="mt-2 text-muted small">
+          <i class="fas fa-info-circle me-1"></i>
+          Showing {{ missingInSourceFormatted.length }} rows with {{ tableHeaders.length }} columns
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case: Rows not present in Target -->
+  <div class="accordion-item" *ngIf="missingInTargetFormatted.length >= 0">
+    <h2 class="accordion-header" id="headingMissingTarget">
+      <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapseMissingTarget" aria-expanded="true" aria-controls="collapseMissingTarget">
+        Rows not present in Target:
+      </button>
+    </h2>
+    <div id="collapseMissingTarget" class="accordion-collapse collapse show"
+      aria-labelledby="headingMissingTarget" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <!-- Add scrollable wrapper -->
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+          <table class="table table-striped table-bordered table-hover">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th *ngFor="let header of tableHeaders" class="fw-bold text-nowrap" 
+                    style="min-width: 120px; white-space: nowrap;">
+                  {{ header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of missingInTargetFormatted; trackBy: trackByIndex">
+                <td *ngFor="let header of tableHeaders" class="text-nowrap" 
+                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;"
+                    [title]="row[header]">
+                  {{ row[header] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Row count info -->
+        <div class="mt-2 text-muted small">
+          <i class="fas fa-info-circle me-1"></i>
+          Showing {{ missingInTargetFormatted.length }} rows with {{ tableHeaders.length }} columns
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <div class="accordion" id="accordionExample">
+    <!-- Time Details Accordion -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTimeDetails">
+        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseTimeDetails" aria-expanded="false" aria-controls="collapseTimeDetails">
+          Time Details:
+        </button>
+      </h2>
+
+      <!-- Collapsible body -->
+      <div id="collapseTimeDetails" class="accordion-collapse collapse" aria-labelledby="headingTimeDetails"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+
+          <!-- Execution Time Summary (without card) -->
+          <h5 class="mb-2">Execution Time Summary</h5>
+          <div class="d-flex justify-content-between">
+            <div>
+              <span class="m-0 fw-semibold">Total Processing Time:</span><br>
+              <span class="text-primary">{{ formatFn(totalSpinnerTime) }}</span>
+            </div>
+            <div *ngIf="spinnerDuration > 0">
+              <span class="m-0 fw-semibold">Last Operation:</span><br>
+              <span class="text-success">{{ formatFn(spinnerDuration) }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>

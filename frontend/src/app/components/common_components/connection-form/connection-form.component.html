@@ -1,0 +1,289 @@
+<form [formGroup]="connectionForm">
+  <div id="selectionContainer" class="mb-4 text-center">
+    <label for="connectionType" class="form-label font-semibold-large-primary">{{primary_connection_text}}</label>
+    <div class="position-relative d-inline-block w-100">
+      <select id="connectionType" class="form-select bg-cyb-navy font-medium-large-white border-secondary text-center"
+        formControlName="connectionType" (change)="onConnectionTypeChange()">
+        <option value="" disabled selected>Select Connection</option>
+        <option value="file_upload" *ngIf="selectedTestToPerform !=='check_data_type'">File Upload</option>
+        <option value="databricks">Databricks</option>
+      </select>
+      <i class="fa-solid fa-caret-down position-absolute top-50 end-0 translate-middle-y me-3 text-white pointer-events-none"></i>
+    </div>
+    <!-- Connection type validation error -->
+    <div *ngIf="isFieldInvalid('connectionType')" class="alert alert-danger mt-2" role="alert">
+      {{ getFieldError('connectionType') }}
+    </div>
+  </div>
+
+  <div id="FileUploadContainer" *ngIf="connectionForm.get('connectionType')?.value === 'file_upload'" class="mb-4">
+    <button type="button" class="btn btn-primary font-medium-large-white mb-4" (click)="triggerFileUpload()">Upload File</button>
+    
+    <input type="file" #fileInput [disabled]="isFileUploaded" (change)="onFileSelected($event)" style="display: none;">
+  
+    <div *ngIf="uploadErrorMessage" class="alert alert-danger mt-2" role="alert">
+      {{ uploadErrorMessage }}
+    </div>
+  
+    <div id="seperator_container" *ngIf="isTxtFileUploaded">
+      <label for="seperator" class="form-label font-semibold-large-primary">Choose a Separator (If txt file):</label>
+      <select id="seperator" class="form-select bg-cyb-navy font-medium-large-white border-secondary text-center ng-touched ng-dirty ng-valid"
+        formControlName="seperator">
+        <option *ngFor="let opt of delimiterOptions" [value]="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div id="azureBlobStorageContainer" *ngIf="connectionForm.get('connectionType')?.value === 'azure_blob_storage'" class="mb-3">
+    <label for="accountUrl" class="form-label font-medium-large-primary">Account URL:</label>
+    <input type="text" id="accountUrl"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('accountUrl')"
+      formControlName="accountUrl">
+    <div *ngIf="isFieldInvalid('accountUrl')" class="invalid-feedback">
+      {{ getFieldError('accountUrl') }}
+    </div>
+
+    <label for="sasToken" class="form-label font-medium-large-primary">SAS Token:</label>
+    <input type="text" id="sasToken"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('sasToken')"
+      formControlName="sasToken">
+    <div *ngIf="isFieldInvalid('sasToken')" class="invalid-feedback">
+      {{ getFieldError('sasToken') }}
+    </div>
+
+    <label for="containerName" class="form-label font-medium-large-primary">Container Name:</label>
+    <input type="text" id="containerName"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('containerName')"
+      formControlName="containerName">
+    <div *ngIf="isFieldInvalid('containerName')" class="invalid-feedback">
+      {{ getFieldError('containerName') }}
+    </div>
+
+    <label for="blobName" class="form-label font-medium-large-primary">Blob Name:</label>
+    <input type="text" id="blobName"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('blobName')"
+      formControlName="blobName">
+    <div *ngIf="isFieldInvalid('blobName')" class="invalid-feedback">
+      {{ getFieldError('blobName') }}
+    </div>
+  </div>
+
+  <div id="mssqlFieldsContainer" *ngIf="connectionForm.get('connectionType')?.value === 'MSSQL'" class="mb-3">
+    <label for="Table" class="form-label font-medium-large-primary"> Table:</label>
+    <input type="text" id="Table"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('table')"
+      formControlName="table">
+    <div *ngIf="isFieldInvalid('table')" class="invalid-feedback">
+      {{ getFieldError('table') }}
+    </div>
+
+    <label for="serverName" class="form-label font-medium-large-primary">Server Name:</label>
+    <input type="text" id="serverName"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('serverName')"
+      formControlName="serverName">
+    <div *ngIf="isFieldInvalid('serverName')" class="invalid-feedback">
+      {{ getFieldError('serverName') }}
+    </div>
+
+    <label for="dbName" class="form-label font-medium-large-primary">DB Name:</label>
+    <input type="text" id="dbName"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('dbName')"
+      formControlName="dbName">
+    <div *ngIf="isFieldInvalid('dbName')" class="invalid-feedback">
+      {{ getFieldError('dbName') }}
+    </div>
+  </div>
+
+  <!--  Databricks Fields with Validation (except Batch ID) -->
+  <div id="databricksFieldsContainer" *ngIf="connectionForm.get('connectionType')?.value === 'databricks'" class="mb-3">
+    <div class="row">
+      <div class="col-md-6">
+        <label for="serverHostName" class="form-label font-medium-large-primary">Server Hostname: <span class="text-danger">*</span></label>
+        <input type="text" id="serverHostName"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('serverHostName')"
+          formControlName="serverHostName">
+        <div *ngIf="isFieldInvalid('serverHostName')" class="invalid-feedback">
+          {{ getFieldError('serverHostName') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="httpPath" class="form-label font-medium-large-primary">HTTP Path: <span class="text-danger">*</span></label>
+        <input type="text" id="httpPath"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('httpPath')"
+          formControlName="httpPath">
+        <div *ngIf="isFieldInvalid('httpPath')" class="invalid-feedback">
+          {{ getFieldError('httpPath') }}
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-md-6">
+        <label for="accessToken" class="form-label font-medium-large-primary">Access Token: <span class="text-danger">*</span></label>
+        <input type="text" id="accessToken"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('accessToken')"
+          formControlName="accessToken">
+        <div *ngIf="isFieldInvalid('accessToken')" class="invalid-feedback">
+          {{ getFieldError('accessToken') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="dbSchemaName" class="form-label font-medium-large-primary">DB Schema Name: <span class="text-danger">*</span></label>
+        <input type="text" id="dbSchemaName"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('dbSchemaName')"
+          formControlName="dbSchemaName">
+        <div *ngIf="isFieldInvalid('dbSchemaName')" class="invalid-feedback">
+          {{ getFieldError('dbSchemaName') }}
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-md-6">
+        <label for="TableDB" class="form-label font-medium-large-primary"> Table: <span class="text-danger">*</span></label>
+        <input type="text" id="TableDB"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('tableDB')"
+          formControlName="tableDB">
+        <div *ngIf="isFieldInvalid('tableDB')" class="invalid-feedback">
+          {{ getFieldError('tableDB') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="batchId" class="form-label font-medium-large-primary">Batch Id(Enter 'NA' if Batch Id is not applicable)</label>
+        <input type="text" id="batchId"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="batchId">
+        <!-- Note: No validation for Batch ID as requested -->
+      </div>
+    </div>
+  </div>
+
+  <div id="azureSqlServerContainer" *ngIf="connectionForm.get('connectionType')?.value === 'azure_sql_server'" class="mb-3">
+    <div class="row">
+      <div class="col-md-6">
+        <label for="server" class="form-label font-medium-large-primary">Server:</label>
+        <input type="text" id="server"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="server">
+      </div>
+      <div class="col-md-6">
+        <label for="database" class="form-label font-medium-large-primary">Database:</label>
+        <input type="text" id="database"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="database">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="username" class="form-label font-medium-large-primary">Username:</label>
+        <input type="text" id="username"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="username">
+      </div>
+      <div class="col-md-6">
+        <label for="password" class="form-label font-medium-large-primary">Password:</label>
+        <input type="text" id="password"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="password">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="tableName" class="form-label font-medium-large-primary">Table Name:</label>
+        <input type="text" id="tableName"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          formControlName="tableName">
+      </div>
+    </div>
+  </div>
+
+  <div id="snowflakeFieldsContainer" *ngIf="connectionForm.get('connectionType')?.value === 'snowflake'" class="mb-3">
+    <div class="row">
+      <div class="col-md-6">
+        <label for="username_snowflake" class="form-label font-medium-large-primary">Username: <span class="text-danger">*</span></label>
+        <input type="text" id="username_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('username_snowflake')"
+          formControlName="username_snowflake">
+        <div *ngIf="isFieldInvalid('username_snowflake')" class="invalid-feedback">
+          {{ getFieldError('username_snowflake') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="password_snowflake" class="form-label font-medium-large-primary">Password: <span class="text-danger">*</span></label>
+        <input type="password" id="password_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('password_snowflake')"
+          formControlName="password_snowflake">
+        <div *ngIf="isFieldInvalid('password_snowflake')" class="invalid-feedback">
+          {{ getFieldError('password_snowflake') }}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="account_snowflake" class="form-label font-medium-large-primary">Account: <span class="text-danger">*</span></label>
+        <input type="text" id="account_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('account_snowflake')"
+          formControlName="account_snowflake">
+        <div *ngIf="isFieldInvalid('account_snowflake')" class="invalid-feedback">
+          {{ getFieldError('account_snowflake') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="warehouse_snowflake" class="form-label font-medium-large-primary">Warehouse Name: <span class="text-danger">*</span></label>
+        <input type="text" id="warehouse_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('warehouse_snowflake')"
+          formControlName="warehouse_snowflake">
+        <div *ngIf="isFieldInvalid('warehouse_snowflake')" class="invalid-feedback">
+          {{ getFieldError('warehouse_snowflake') }}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="database_snowflake" class="form-label font-medium-large-primary">Database: <span class="text-danger">*</span></label>
+        <input type="text" id="database_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('database_snowflake')"
+          formControlName="database_snowflake">
+        <div *ngIf="isFieldInvalid('database_snowflake')" class="invalid-feedback">
+          {{ getFieldError('database_snowflake') }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="schema_snowflake" class="form-label font-medium-large-primary">DB Schema Name: <span class="text-danger">*</span></label>
+        <input type="text" id="schema_snowflake"
+          class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+          [class.is-invalid]="isFieldInvalid('schema_snowflake')"
+          formControlName="schema_snowflake">
+        <div *ngIf="isFieldInvalid('schema_snowflake')" class="invalid-feedback">
+          {{ getFieldError('schema_snowflake') }}
+        </div>
+      </div>
+    </div>
+    <label for="tableName_snowflake" class="form-label font-medium-large-primary">DB Table Name: <span class="text-danger">*</span></label>
+    <input type="text" id="tableName_snowflake"
+      class="form-control bg-cyb-background-light font-medium-medium-primary border-secondary"
+      [class.is-invalid]="isFieldInvalid('tableName_snowflake')"
+      formControlName="tableName_snowflake">
+    <div *ngIf="isFieldInvalid('tableName_snowflake')" class="invalid-feedback">
+      {{ getFieldError('tableName_snowflake') }}
+    </div>
+  </div>
+
+</form>

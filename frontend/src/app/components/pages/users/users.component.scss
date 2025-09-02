@@ -1,0 +1,272 @@
+@use '../../../../styles.scss' as *;
+
+// Main table container styling
+.table-container {
+    // Variables using custom colors
+    $primary-color: $cyb-navy;
+    $secondary-color: $cyb-secondary-blue;
+    $success-color: $cyb-success;
+    $error-color: $cyb-error; 
+    $warning-color: $cyb-warning;
+    $accent-color: $cyb-blue;
+    
+    // Container styling
+    padding: 1rem;
+    border-radius: .5rem;
+    background-color: $cyb-background-light;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    //min-height: 100vh;
+    
+    // .table-title {
+    //   color: $primary-color;
+    //   font-size: 2rem;
+    //   font-weight: 600;
+    //   margin-bottom: 2rem;
+    //   text-align: center;
+      
+    //   // Responsive typography
+    //   @media (max-width: 768px) {
+    //     font-size: 1.5rem;
+    //     margin-bottom: 1.5rem;
+    //   }
+    // }
+    
+    // Responsive adjustments
+    @media (max-width: 768px) {
+      padding: 1rem;
+    }
+  }
+  
+  .table-wrapper {
+    background: $cyb-background-white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(43, 59, 75, 0.1);
+    overflow: hidden;
+    max-width: 100%;
+    overflow-x: auto;
+    transition: box-shadow 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 6px 12px rgba(43, 59, 75, 0.15);
+    }
+  }
+  
+  .user-table {
+    // Variables using custom colors
+    $primary-color: $cyb-navy;
+    $secondary-color: $cyb-secondary-blue;
+    $success-color: $cyb-success;
+    $error-color: $cyb-error; 
+    $warning-color: $cyb-warning;
+    $accent-color: $cyb-blue;
+    
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+   thead {
+      th {
+        color: $cyb-background-white;
+        padding: .5rem .5rem;
+        text-align: left;
+        // letter-spacing: 0.5px;
+        position: relative;
+        vertical-align: middle;
+        transition: background-color 0.3s ease;
+        background-color: $primary-color;
+        
+        
+        &:not(:last-child)::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 25%;
+          height: 50%;
+          width: 1px;
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        &:hover {
+        //   background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+    
+    tbody {
+      tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid $cyb-background-light;
+        
+        &:hover {
+          //background-color: rgba($accent-color, 0.1);
+          // transform: translateY(-1px);
+          // box-shadow: 0 2px 8px rgba(0, 185, 242, 0.15);
+        }
+        
+        &.inactive-row {
+          opacity: 0.7;
+          background-color: $cyb-background-light;
+          
+          &:hover {
+            background-color: rgba($cyb-background-gray, 0.1);
+          }
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+      
+      td {
+        padding: .5rem .5rem;
+        // font-size: 0.9rem;
+        color: $cyb-background-gray;
+        vertical-align: middle;
+        transition: color 0.3s ease;
+        
+        &.username {
+          font-weight: 600;
+          color: $primary-color;
+        }
+        
+        &.email {
+          color: $cyb-background-gray;
+          font-family: monospace;
+        }
+      }
+    }
+    
+    // Responsive adjustments
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+      
+      thead th,
+      tbody td {
+        padding: 0.8rem;
+      }
+    }
+  }
+  
+  .role-badge {
+    // Variables using custom colors
+    $primary-color: $cyb-navy;
+    $secondary-color: $cyb-secondary-blue;
+    $success-color: $cyb-success;
+    $error-color: $cyb-error; 
+    $warning-color: $cyb-warning;
+    $accent-color: $cyb-blue;
+    
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    //text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    
+    &.role-admin {
+      background: linear-gradient(135deg, $error-color, darken($error-color, 10%));
+      color: $cyb-background-white;
+      box-shadow: 0 2px 4px rgba(220, 77, 90, 0.3);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 77, 90, 0.4);
+      }
+    }
+    
+    &.role-performer {
+      background: linear-gradient(135deg, $warning-color, darken($warning-color, 10%));
+      color: $cyb-background-white;
+      box-shadow: 0 2px 4px rgba(218, 158, 41, 0.3);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(218, 158, 41, 0.4);
+      }
+    }
+    
+    &.role-viewer {
+      background: linear-gradient(135deg, $accent-color, $secondary-color);
+      color: $cyb-background-white;
+      box-shadow: 0 2px 4px rgba(0, 185, 242, 0.3);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 185, 242, 0.4);
+      }
+    }
+    
+    // Responsive adjustments
+    @media (max-width: 768px) {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+    }
+  }
+  
+  .status-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .status-indicator {
+    // Variables using custom colors
+    $success-color: $cyb-success;
+    $error-color: $cyb-error;
+    
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
+    
+    &.active {
+      background-color: $success-color;
+      box-shadow: 0 0 0 0 rgba(36, 116, 58, 0.7);
+    }
+    
+    &.inactive {
+      background-color: $error-color;
+      box-shadow: 0 0 0 0 rgba(220, 77, 90, 0.7);
+      animation: none;
+    }
+  }
+  
+  .status-text {
+    // Variables using custom colors
+    $primary-color: $cyb-navy;
+    
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    
+    .inactive-row & {
+      color: $cyb-background-gray;
+    }
+  }
+  
+  // Enhanced pulse animation
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(36, 116, 58, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(36, 116, 58, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(36, 116, 58, 0);
+    }
+  }
+  
+  // Loading state
+  .table-loading {
+    .user-table {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }

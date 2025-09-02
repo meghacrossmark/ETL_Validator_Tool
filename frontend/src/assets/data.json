@@ -1,0 +1,52 @@
+{
+  "Connection": {
+    "source": {
+      "conn": "source",
+      "conn_params": {
+        "accessToken": "",
+        "batchId": "",
+        "dbSchemaName": "",
+        "httpPath": "",
+        "serverHostName": "",
+        "tableDB": ""
+      },
+      "conn_type": "",
+      "dataTypes": [
+      ],
+      "headers": [
+      ],
+      "tbl_name": ""
+    }
+  },
+  "Test": {
+    "logged_in_user_id": "",
+    "operation": "",
+    "test_params": {
+      "column_to_test": "",
+      "data_types": "",
+      "on_index": ""
+    },
+    "test_type": ""
+  },
+  "result_metadata": {
+    "results": [
+      {
+        "actual_type": "",
+        "column": "",
+        "expected_type": "",
+        "match_count": "",
+        "non_matching_unique_values_with_counts": [
+          {
+            "count": "",
+            "value": ""
+          }
+        ],
+        "not_match_count": "",
+        "null_count": "",
+        "success": "",
+        "total_count": ""
+      }
+    ]
+  },
+  "type_of_test": ""
+}

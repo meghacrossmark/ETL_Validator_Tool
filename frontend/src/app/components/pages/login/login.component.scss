@@ -1,0 +1,82 @@
+@use '../../../../styles.scss' as *;
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: $cyb-background-light;
+    border-radius: 8px;
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    background-color: $cyb-background-white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: $cyb-navy;
+    font-weight: 500;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: $cyb-navy;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid $cyb-background-gray;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      
+      &:focus {
+        outline: none;
+        border-color: $cyb-navy;
+        box-shadow: 0 0 0 2px rgba($cyb-navy, 0.25);
+      }
+    }
+  }
+  
+  .error-message {
+    color: $cyb-error;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  
+  .login-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $cyb-blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+      background-color: darken($cyb-blue, 10%);
+      border-color: darken($cyb-blue, 10%);
+    }
+    
+    &:disabled {
+      background-color: $cyb-background-gray;
+      cursor: not-allowed;
+    }
+  }

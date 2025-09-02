@@ -1,0 +1,78 @@
+<div *ngIf="isModalOpen" class="modal">
+  <div class="modal-content">
+    <h2>SQL Query Generator - {{queryType}}</h2>
+    <form [formGroup]="queryForm">
+      <table>
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Type</th>
+            <th>Select</th>
+            <th>Apply Function</th>
+            <th>Function</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="fields">
+          <tr *ngFor="let field of fields.controls; let i = index" [formGroupName]="i">
+            <td>{{ field.get('name')?.value }}</td>
+            <td>{{ columns[i].type }}</td>
+            <td><input type="checkbox" formControlName="isSelected"></td>
+            <td><input type="checkbox" formControlName="applyFunction"></td>
+            <td>
+              <select formControlName="selectedFunction" [disabled]="!field.get('applyFunction')?.value">
+                <option value="">Select Function</option>
+                <option *ngFor="let func of sqlFunctions" [value]="func">{{func}}</option>
+              </select>
+            </td>
+            <td><input type="text" formControlName="functionParams" [disabled]="!field.get('applyFunction')?.value"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="conditions-section">
+        <h3>Conditions</h3>
+        <div formArrayName="conditions">
+          <div *ngFor="let condition of conditions.controls; let i = index" [formGroupName]="i" class="condition-row">
+            <select formControlName="column">
+              <option value="">Select Column</option>
+              <option *ngFor="let column of columns" [value]="column.name">{{column.name}}</option>
+            </select>
+            <select formControlName="condition">
+              <option value="">Select Condition</option>
+              <option *ngFor="let cond of sqlConditions" [value]="cond">{{cond}}</option>
+            </select>
+            <input type="text" formControlName="value" placeholder="Value">
+            <button type="button" (click)="removeCondition(i)">Remove</button>
+          </div>
+        </div>
+        <button type="button" (click)="addCondition()">+ Add Condition</button>
+      </div>
+
+      <div class="button-section">
+        <button type="button" (click)="generateQuery()">Generate Query</button>
+      </div>
+
+      <div class="query-output">
+        <textarea readonly>{{ generatedQuery }}</textarea>
+        <button type="button" class="test-query" (click)="testQuery()">Test Query</button>
+      </div>
+
+      <div *ngIf="queryResult.length > 0" class="result-table">
+        <table>
+          <thead>
+            <tr>
+              <th *ngFor="let column of columns">{{column.name}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of queryResult">
+              <td *ngFor="let column of columns">{{row[column.name]}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+    <button class="close-button" (click)="closeModal()">Close</button>
+  </div>
+</div>

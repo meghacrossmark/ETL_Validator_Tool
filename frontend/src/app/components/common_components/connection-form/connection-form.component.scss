@@ -1,0 +1,34 @@
+@import 'styles.scss';
+  
+#selectionContainer{
+  max-width: 400px;            // control width
+    margin: 0 auto;  
+}
+
+#FileUploadContainer {
+    text-align: center;
+    
+
+    button {
+      @extend .font-medium-large-white;
+      padding: 0.5rem 2rem;
+    }
+
+    .uploading{
+        @extend .font-regular-medium-primary;
+        background-color: $cyb-warning;
+    }
+
+    .uploaded{
+        background-color: $cyb-success;
+    }
+  }
+
+  #seperator_container{
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  input .form-control{
+    @extend .font-regular-medium-primary;
+  }

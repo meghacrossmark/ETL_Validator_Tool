@@ -1,0 +1,33 @@
+<div class="table-container">
+  <!-- <h2 class="table-title">User Management</h2> -->
+  
+  <div class="table-wrapper">
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" [class.inactive-row]="!user.isActive">
+          <td class="username">{{ user.username }}</td>
+          <td class="email">{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>
+            <div class="status-container">
+              <span class="status-indicator" [class.active]="user.isActive" [class.inactive]="!user.isActive"></span>
+              <span class="status-text">{{ user.isActive ? 'Active' : 'Inactive' }}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

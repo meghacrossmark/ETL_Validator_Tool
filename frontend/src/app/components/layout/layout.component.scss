@@ -1,0 +1,31 @@
+@import 'styles.scss';
+.app-container {
+  display: flex;
+  height: 100vh;
+
+  header {
+    height: 50px;
+    border-bottom: 1px solid $cyb-navy;
+  }
+    
+  .main-content {
+    flex-grow: 1;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+      
+    .sidebar {
+      width: 50px;
+      background-color: $cyb-background-gray;
+      border-right: 1px solid $cyb-navy;
+    }
+      
+    main {
+      flex: 1;
+      padding: 10px;
+      overflow: auto;
+      background-color: $cyb-background-white;
+    }
+  }
+}
